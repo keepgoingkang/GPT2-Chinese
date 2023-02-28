@@ -1,0 +1,174 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/keepgoingkang/GPT2-Chinese/blob/old_gpt_2_chinese_before_2021_4_22/openai\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "0SmlXFsBzvVl",
+        "outputId": "5974645d-cb26-4d36-f749-800d162809f2"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Human: 如何下载1558M版GPT-2模型？\n",
+            "\n",
+            "AI: 你可以从OpenAI官方网站上免费下载1558M版GPT-2模型，具体的下载地址可以从https://openai.com/blog/better-language-models/页面上找到。你也可以使用pip命令来安装GPT-2，例如pip install gpt-2-simple。\n",
+            "Human: Exit\n"
+          ]
+        }
+      ],
+      "source": [
+        "import os\n",
+        "import openai\n",
+        "\n",
+        "openai.api_key = \"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\"\n",
+        "user = 'kang'\n",
+        "log_file = './history/%s.log' % user\n",
+        "if not os.path.exists('./history'):\n",
+        "  os.mkdir('./history')\n",
+        "if not os.path.exists(log_file):\n",
+        "  with open(log_file, 'w') as f:\n",
+        "    f.write(\"The following is a conversation with an AI assistant.\\nHuman: Hello, who are you?\\nAI: I am an AI created by OpenAI. How can I help you today?\")\n",
+        "while True:\n",
+        "  input_ = input('Human: ')\n",
+        "  if input_.lower() in ('quit', 'exit'):\n",
+        "    break\n",
+        "  # get history prompt\n",
+        "  his_prompt = ''\n",
+        "  with open(log_file, 'r') as f:\n",
+        "    for line in f:\n",
+        "      his_prompt += line\n",
+        "  if input_.startswith('non-context'):\n",
+        "    prompt = '\\nHuman:' + input_.strip('non-context') + '\\nAI: '\n",
+        "    with open(log_file, 'a') as f:\n",
+        "      f.write('\\nHuman:' + input_.strip('non-context'))\n",
+        "    # print('\\nHuman:' + input_.strip('non-context'))\n",
+        "  else:\n",
+        "    prompt = his_prompt[-300:] + '\\nHuman: ' + input_ + '\\nAI: '\n",
+        "    with open(log_file, 'a') as f:\n",
+        "      f.write('\\nHuman: ' + input_)\n",
+        "    # print('\\nHuman: ' + input_)\n",
+        "  \n",
+        "  response = openai.Completion.create(\n",
+        "    model=\"text-davinci-003\",\n",
+        "    prompt=prompt,\n",
+        "    temperature=0.9,\n",
+        "    max_tokens=150,\n",
+        "    top_p=1,\n",
+        "    frequency_penalty=0.0,\n",
+        "    presence_penalty=0.6,\n",
+        "    stop=[\" Human:\", \" AI:\"]\n",
+        "  )\n",
+        "  response_ai = response.choices[0].text\n",
+        "  with open(log_file, 'a') as f:\n",
+        "      f.write('\\nAI: ' + response_ai)\n",
+        "  print('\\nAI: ' + response_ai)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "zq9uQljtBAwJ",
+        "outputId": "5506b0b7-aeb7-44d6-b1af-05606176f1a1"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/\n",
+            "Collecting openai\n",
+            "  Downloading openai-0.26.5.tar.gz (55 kB)\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m55.5/55.5 KB\u001b[0m \u001b[31m2.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h  Installing build dependencies ... \u001b[?25l\u001b[?25hdone\n",
+            "  Getting requirements to build wheel ... \u001b[?25l\u001b[?25hdone\n",
+            "  Installing backend dependencies ... \u001b[?25l\u001b[?25hdone\n",
+            "  Preparing metadata (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "Requirement already satisfied: aiohttp in /usr/local/lib/python3.8/dist-packages (from openai) (3.8.4)\n",
+            "Requirement already satisfied: tqdm in /usr/local/lib/python3.8/dist-packages (from openai) (4.64.1)\n",
+            "Requirement already satisfied: requests>=2.20 in /usr/local/lib/python3.8/dist-packages (from openai) (2.25.1)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.8/dist-packages (from requests>=2.20->openai) (2022.12.7)\n",
+            "Requirement already satisfied: chardet<5,>=3.0.2 in /usr/local/lib/python3.8/dist-packages (from requests>=2.20->openai) (4.0.0)\n",
+            "Requirement already satisfied: urllib3<1.27,>=1.21.1 in /usr/local/lib/python3.8/dist-packages (from requests>=2.20->openai) (1.24.3)\n",
+            "Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.8/dist-packages (from requests>=2.20->openai) (2.10)\n",
+            "Requirement already satisfied: charset-normalizer<4.0,>=2.0 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (3.0.1)\n",
+            "Requirement already satisfied: async-timeout<5.0,>=4.0.0a3 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (4.0.2)\n",
+            "Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (22.2.0)\n",
+            "Requirement already satisfied: multidict<7.0,>=4.5 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (6.0.4)\n",
+            "Requirement already satisfied: yarl<2.0,>=1.0 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (1.8.2)\n",
+            "Requirement already satisfied: aiosignal>=1.1.2 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (1.3.1)\n",
+            "Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.8/dist-packages (from aiohttp->openai) (1.3.3)\n",
+            "Building wheels for collected packages: openai\n",
+            "  Building wheel for openai (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "  Created wheel for openai: filename=openai-0.26.5-py3-none-any.whl size=67620 sha256=304b8a7a7875b5fdf161097d73b65962c93cea0f63fc08dd966366616a2205a0\n",
+            "  Stored in directory: /root/.cache/pip/wheels/a7/47/99/8273a59fbd59c303e8ff175416d5c1c9c03a2e83ebf7525a99\n",
+            "Successfully built openai\n",
+            "Installing collected packages: openai\n",
+            "Successfully installed openai-0.26.5\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install openai"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pwd"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Xr8nBYAUvjkT",
+        "outputId": "5b799a86-9136-4a9f-bfe2-1880f1f119c9"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "/content\n"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMZlHiknqzpqRRaIKY9KGUp",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
